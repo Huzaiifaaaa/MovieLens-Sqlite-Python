@@ -31,29 +31,71 @@ def commandTwo(conn):
         print("  Budget: ${:,}".format(moviedetails.Budget)+" (USD)")
         print("  Revenue: ${:,}".format(moviedetails.Revenue)+" (USD)")
         print("  Num reviews: "+str(moviedetails.Num_Reviews))
-        print("  Avg rating: "+str(moviedetails.Avg_Rating)+"0 (0..10)")
+        rating=str(float("{:.2f}".format(moviedetails.Avg_Rating)))
+        if len(rating)==3:
+            rating=rating+"0"
+        print("  Avg rating: "+rating+" (0..10)")
         
         genre=', '.join(moviedetails.Genres)
         if moviedetails.Genres:
-            print("  Genres: "+genre+",")
+            print("  Genres: "+genre+", ")
         else:
             print("  Genres: "+genre)
 
         companies=', '.join(moviedetails.Production_Companies)
         if moviedetails.Production_Companies:
-            print("  Production companies: "+companies+",")
+            print("  Production companies: "+companies+", ")
         else:
             print("  Production companies: "+companies)
         print("  Tagline: "+moviedetails.Tagline)
 
 def commandThree(conn):
-    pass
+    N=input("\nN? ")
+    if int(N)<=0:
+        print("Please enter a positive value for N...")
+        return
+    
+    num_of_reviews=input("min number of reviews? ")
+    if int(num_of_reviews)<=0:
+        print("Please enter a positive value for min number of reviews...")
+        return
+
+    topmovies=objecttier.get_top_N_movies(conn,int(N),int(num_of_reviews))
+    if topmovies!=None:
+        print("\n")
+        for i in range(len(topmovies)):       
+            reviews= str(float("{:.2f}".format(topmovies[i].Avg_Rating)))
+            if len(reviews)==3:
+                reviews=reviews+"0"
+
+            print(str(topmovies[i].Movie_ID)+" : "+topmovies[i].Title+" ("+str(topmovies[i].Release_Year)+"), avg rating = "+str(reviews)+" ("+str(topmovies[i].Num_Reviews) +" reviews)")
+        
+
 
 def commandFour(conn):
-    pass
+    rating=input("\nEnter rating (0..10): ")
+    if int(rating)<0 or int(rating)>10:
+        print("Invalid rating...")
+        return
+    
+    movieid=input("Enter movie id: ")
+    output=objecttier.add_review(conn,int(movieid),int(rating))
+    if output==0:
+        print("\nNo such movie...")
+    else:
+        print("\nReview successfully inserted")
+        
+
 
 def commandFive(conn):
-    pass
+    tagline=input("\ntagline? ")
+    movieid=input("movie id? ")
+
+    output=objecttier.set_tagline(conn,int(movieid),tagline)
+    if output==0:
+        print("\nNo such movie...")
+    else:
+        print("\nTagline successfully set")
 
 
 
